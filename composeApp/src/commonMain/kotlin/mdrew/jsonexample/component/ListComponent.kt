@@ -25,8 +25,12 @@ interface ListComponent :
     data class State(
         override val loading: Boolean = false,
         override val error: Error? = null,
-        val exampleJsonObjects: List<ExampleJsonObject> = listOf()
+        val exampleJsonObjects: Map<Int, List<ExampleJsonObject>> = mapOf()
     ) : Component.UIState<Error>
+
+    fun interface Builder {
+        fun build(componentContext: ComponentContext): ListComponent
+    }
 }
 
 class ListComponentImpl(
@@ -56,9 +60,19 @@ class ListComponentImpl(
 
                 is APIResult.Success -> {
                     _state.update {
-                        state.value.copy(
-                            loading = false, exampleJsonObjects = result.data
-                        )
+                        state.value.copy(loading = false,
+                            exampleJsonObjects = mutableMapOf<Int, List<ExampleJsonObject>>().apply {
+                                result.data.filterNot { it.name.isNullOrEmpty() }.forEach {
+                                        val list = get(it.listId)
+                                        if (list == null) {
+                                            put(it.listId, listOf())
+                                        } else {
+                                            put(it.listId, list.toMutableList().apply {
+                                                add(it)
+                                            }.sortedBy { obj -> obj.name })
+                                        }
+                                    }
+                            })
                     }
                 }
             }

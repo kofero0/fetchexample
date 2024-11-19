@@ -11,6 +11,10 @@ interface AboutComponent : Component<AboutComponent.State,AboutComponent.Error> 
         override val loading: Boolean = false,
         override val error: Error? = null
     ) : Component.UIState<Error>
+
+    fun interface Builder {
+        fun build(componentContext: ComponentContext): AboutComponent
+    }
 }
 
 class AboutComponentImpl(componentContext: ComponentContext): AboutComponent, ComponentContext by componentContext {

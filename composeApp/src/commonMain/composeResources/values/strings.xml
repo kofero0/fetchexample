@@ -1,0 +1,5 @@
+<resources>
+    <string name="tab_0_name">List</string>
+    <string name="tab_1_name">About</string>
+    <string name="populate_button_text">Populate!</string>
+</resources>

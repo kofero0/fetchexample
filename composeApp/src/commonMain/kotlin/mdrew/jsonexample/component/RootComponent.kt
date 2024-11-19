@@ -29,6 +29,7 @@ interface RootComponent : Component<RootComponent.State,RootComponent.RootError>
 
 class RootComponentImpl(
     componentContext: ComponentContext,
+    private val tabPageComponentBuilder:TabPageComponent.Builder,
 ) : RootComponent, ComponentContext by componentContext {
 
     private val navigation = StackNavigation<Config>()
@@ -43,10 +44,8 @@ class RootComponentImpl(
 
     private fun child(config: Config, componentContext: ComponentContext): RootComponent.Child =
         when (config) {
-            is Config.TabPage -> RootComponent.Child.TabPageChild(tabComponent(componentContext))
+            is Config.TabPage -> RootComponent.Child.TabPageChild(tabPageComponentBuilder.build(componentContext))
         }
-
-    private fun tabComponent(componentContext:ComponentContext): TabPageComponent = TabPageComponentImpl(componentContext)
 
     override fun onBackClicked() {
         navigation.pop()

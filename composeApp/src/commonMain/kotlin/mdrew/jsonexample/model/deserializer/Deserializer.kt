@@ -2,6 +2,7 @@ package mdrew.jsonexample.model.deserializer
 
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonElement
+import kotlinx.serialization.json.contentOrNull
 import kotlinx.serialization.json.intOrNull
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonObject
@@ -40,7 +41,7 @@ fun deserializeToExampleJsonObjectList(input: String?): Deserializer.Result<List
                 val obj = jsonElement.jsonObject
                 val id = obj["id"]?.jsonPrimitive?.intOrNull
                 val listId = obj["listId"]?.jsonPrimitive?.intOrNull
-                val name = obj["name"]?.jsonPrimitive?.content
+                val name = obj["name"]?.jsonPrimitive?.contentOrNull
                 if (id == null || listId == null) {
                     return@deserializeToExampleJsonObjectList Deserializer.Result.Failure(Deserializer.Result.Failure.Reason.MALFORMED)
                 }

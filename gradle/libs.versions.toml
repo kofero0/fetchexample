@@ -20,6 +20,7 @@ kmp-decompose = "3.1.0"
 kmp-decompose-essenty = "2.1.0"
 kmp-parcelize-darwin = "0.2.4"
 kotlinx-coroutines = "1.9.0"
+material3Desktop = "1.2.1"
 
 [libraries]
 ktor-client-mock = { module = "io.ktor:ktor-client-mock", version.ref = "ktor"}
@@ -46,6 +47,7 @@ androidx-constraintlayout = { group = "androidx.constraintlayout", name = "const
 androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activityCompose" }
 androidx-lifecycle-viewmodel = { group = "org.jetbrains.androidx.lifecycle", name = "lifecycle-viewmodel", version.ref = "androidx-lifecycle" }
 androidx-lifecycle-runtime-compose = { group = "org.jetbrains.androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "androidx-lifecycle" }
+material3 = { module = "org.jetbrains.compose.material3:material3", version.ref = "material3Desktop" }
 
 [plugins]
 serialization = { id = "plugin.serialization", version.ref = "kotlin"}
