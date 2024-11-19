@@ -1,33 +1,46 @@
 package mdrew.jsonexample
 
-import mdrew.jsonexample.model.deserializer.Deserializer
+import io.ktor.client.HttpClient
+import io.ktor.client.engine.mock.MockEngine
+import io.ktor.client.engine.mock.respond
+import io.ktor.http.HttpHeaders
+import io.ktor.http.HttpStatusCode
+import io.ktor.http.Url
+import io.ktor.http.headersOf
+import io.ktor.utils.io.ByteReadChannel
+import kotlinx.coroutines.test.runTest
+import mdrew.jsonexample.model.APIResult
 import mdrew.jsonexample.model.deserializer.deserializeToExampleJsonObjectList
+import mdrew.jsonexample.repository.remote.ExampleJsonObjectRemoteSource
+import mdrew.jsonexample.repository.remote.ExampleJsonObjectRemoteSourceImpl
+import kotlin.test.BeforeTest
 import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
-class DeserializerTests {
+class ExampleJsonObjectRemoteSourceTests {
+    private var unit: ExampleJsonObjectRemoteSource? = null
 
-    @Test
-    fun testDeserializerReturnsSuccessfulWithProperlyFormedJSON() {
-        val result = deserializeToExampleJsonObjectList(JSON)
-        assertTrue(result is Deserializer.Result.Success)
-        val list = result.data
-        assertEquals(list.first().id, FIRST_ID)
+    @BeforeTest
+    fun before() {
+        val mockEngine = MockEngine { _ ->
+            respond(
+                content = ByteReadChannel(JSON),
+                status = HttpStatusCode.OK,
+                headers = headersOf(HttpHeaders.ContentType, "application/json")
+            )
+        }
+
+        unit = ExampleJsonObjectRemoteSourceImpl(
+            HttpClient(mockEngine), url = Url("testUrl")
+        ) { deserializeToExampleJsonObjectList(it) }
     }
 
     @Test
-    fun testDeserializerReturnsFailureWithMalformedJSON() {
-        val result = deserializeToExampleJsonObjectList(JSON + "456")
-        assertTrue(result is Deserializer.Result.Failure)
-        assertEquals(result.reason, Deserializer.Result.Failure.Reason.MALFORMED)
-    }
-
-    @Test
-    fun testDeserializerReturnsFailureWithIncorrectType() {
-        val result = deserializeToExampleJsonObjectList(INCORRECT_TYPE_JSON)
-        assertTrue(result is Deserializer.Result.Failure)
-        assertEquals(result.reason, Deserializer.Result.Failure.Reason.MALFORMED)
+    fun testRemoteSourceWithCorrectResponseReturnsSuccess() = runTest {
+        val result = unit?.get()
+        assertTrue(result is APIResult.Success)
+        assertEquals(result.data.first().id, FIRST_ID)
     }
 
     private companion object {
@@ -58,8 +71,5 @@ class DeserializerTests {
 {"id": 52, "listId": 2, "name": ""},
 {"id": 681, "listId": 4, "name": "Item 681"},
 {"id": 137, "listId": 3, "name": "Item 137"}]"""
-        const val INCORRECT_TYPE_JSON = """[{"id": 599, "listId": 1, "name": null},
-{"id": 424, "listId": 2, "name": null},
-{"id": false, "listId": 1, "name": ""}]"""
     }
 }

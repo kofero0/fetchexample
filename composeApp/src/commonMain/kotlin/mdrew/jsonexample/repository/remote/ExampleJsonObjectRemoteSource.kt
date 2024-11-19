@@ -14,8 +14,8 @@ fun interface ExampleJsonObjectRemoteSource {
 }
 
 class ExampleJsonObjectRemoteSourceImpl(
-    private val client: HttpClient,
-    private val url: Url,
+    private val client: HttpClient = HttpClient(),
+    private val url: Url = Url("https://fetch-hiring.s3.amazonaws.com/hiring.json"),
     private val deserializer: Deserializer<List<ExampleJsonObject>>
 ) : ExampleJsonObjectRemoteSource {
     override suspend fun get(): APIResult<List<ExampleJsonObject>> {
